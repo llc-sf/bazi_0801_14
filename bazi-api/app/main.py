@@ -12,6 +12,16 @@ class BaziRequest(BaseModel):
     sect: int = 1    # 1: 晚子时日柱算明天, 2: 晚子时日柱算当天
     realname: Optional[str] = ""
 
+class LegacyBaziRequest(BaseModel):
+    name: str
+    city: str
+    gender: str  # "男" 或 "女"
+    year: int
+    month: int
+    day: int
+    hour: int
+    minute: int
+
 class BaziInfoRequest(BaseModel):
     datetime: str
     gender: int = 1
@@ -70,7 +80,7 @@ def get_version():
 
 # 保持兼容性接口
 @app.post("/bazi")
-def get_bazi_legacy(req: BaziRequest):
+def get_bazi_legacy(req: LegacyBaziRequest):
     """兼容性接口"""
     try:
         # 构造datetime字符串
@@ -100,7 +110,8 @@ def get_bazi_legacy(req: BaziRequest):
             "十神": {
                 "年干": result["gods"][0] if len(result["gods"]) > 0 else "",
                 "月干": result["gods"][1] if len(result["gods"]) > 1 else "",
-                "时干": result["gods"][2] if len(result["gods"]) > 2 else ""
+                "日干": result["gods"][2] if len(result["gods"]) > 2 else "",
+                "时干": result["gods"][3] if len(result["gods"]) > 3 else ""
             },
             "大运": {
                 "description": f"起运年龄：{result.get('startAge', '8')}岁",

@@ -51,7 +51,25 @@ class BaziCalculator:
             "lunar_str": f"{lunar.getYear()}年{lunar.getMonthInChinese()}月{lunar.getDayInChinese()}日"
         }
         
-        # 5. 构造返回数据 - 完全按照前端格式
+        # 5. 计算大运信息
+        yun = bazi.getYun(gender, sect)
+        dayun_list = yun.getDaYun()
+        
+        # 处理大运数据
+        dayun_result = []
+        start_age = 8  # 默认起运年龄
+        for item in dayun_list:
+            pillar = item.getGanZhi() or '童限'
+            if item.getStartAge() > 0:
+                start_age = item.getStartAge()
+            dayun_result.append({
+                "startYear": item.getStartYear(),
+                "startAge": item.getStartAge(),
+                "pillar": pillar,
+                "shishen": self._get_shishen_by_pillar(day_gan, pillar)
+            })
+        
+        # 6. 构造返回数据 - 完全按照前端格式
         result = {
             # 基本信息
             "realname": realname,
@@ -108,7 +126,11 @@ class BaziCalculator:
                 "month": "",
                 "day": lunar.getDayXunKong()[0] if lunar.getDayXunKong() else "",
                 "time": lunar.getDayXunKong()[1] if len(lunar.getDayXunKong()) > 1 else ""
-            }
+            },
+            
+            # 大运信息
+            "startAge": start_age,
+            "dayunList": dayun_result
         }
         
         return result
@@ -181,6 +203,10 @@ class BaziCalculator:
         # 月干十神
         month_gan_shishen = self._get_shishen_gan(day_gan, month_gan)
         gods.append(month_gan_shishen)
+        
+        # 日干十神（日干对自己是比肩）
+        day_gan_shishen = "比肩"
+        gods.append(day_gan_shishen)
         
         # 时干十神
         time_gan_shishen = self._get_shishen_gan(day_gan, time_gan)
