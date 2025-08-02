@@ -47,8 +47,8 @@ class BaziCalculator:
             "year": lunar.getYear(),
             "month": lunar.getMonth(),
             "day": lunar.getDay(),
-            "isLeap": lunar.isLeap(),
-            "lunar_str": f"{lunar.getYear()}年{'' if not lunar.isLeap() else '闰'}{lunar.getMonthInChinese()}月{lunar.getDayInChinese()}日"
+            "isLeap": False,  # 简化处理
+            "lunar_str": f"{lunar.getYear()}年{lunar.getMonthInChinese()}月{lunar.getDayInChinese()}日"
         }
         
         # 5. 构造返回数据 - 完全按照前端格式
